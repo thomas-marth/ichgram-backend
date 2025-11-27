@@ -12,8 +12,13 @@ export default tseslint.config(
       },
     },
     rules: {
-      "no-unused-vars": "error",
-      "no-console": "off",
+      "no-unused-vars": [
+        "warn",
+        {
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 );
