@@ -12,11 +12,13 @@ export default tseslint.config(
       },
     },
     rules: {
-      "no-unused-vars": [
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
         "warn",
         {
           args: "after-used",
           argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
     },

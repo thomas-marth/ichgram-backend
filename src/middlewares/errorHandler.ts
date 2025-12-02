@@ -6,7 +6,6 @@ const errorHandler = (
   error: ResponseError,
   _: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   __: NextFunction,
 ): void => {
   const { status = 500, message = "Server error" } = error;
