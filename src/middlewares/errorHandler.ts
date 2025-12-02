@@ -4,10 +4,10 @@ import { ResponseError } from "../types/interface.js";
 
 const errorHandler = (
   error: ResponseError,
-  req: Request,
+  _: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction,
+  __: NextFunction,
 ): void => {
   const { status = 500, message = "Server error" } = error;
   res.status(status).json({

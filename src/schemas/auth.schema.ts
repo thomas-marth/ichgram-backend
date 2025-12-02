@@ -1,0 +1,74 @@
+import * as z from "zod";
+import {
+  passwordRegexp,
+  emailRegexp,
+  usernameRegexp,
+} from "../constants/auth.constants.js";
+
+export const registerSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must have at least 3 characters")
+    .max(20, "Username must not exceed 20 characters")
+    .regex(
+      usernameRegexp,
+      "Username can include letters, numbers, . and _, and cannot start with . or _",
+    ),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .regex(emailRegexp, "Email must contain @ and not contain spacces"),
+
+  password: z
+    .string()
+    .min(8, "Password must have at least 8 characters")
+    .regex(
+      passwordRegexp,
+      "Password must include 1 uppercase letter, 1 digit and 1 special character",
+    ),
+});
+
+export type RegisterPayload = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must have at least 3 characters")
+    .max(20, "Username must not exceed 20 characters")
+    .regex(
+      usernameRegexp,
+      "Username can include letters, numbers, . and _, and cannot start with . or _",
+    ),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .regex(emailRegexp, "Email must contain @ and not contain spacces"),
+
+  password: z
+    .string()
+    .min(8, "Password must have at least 8 characters")
+    .regex(
+      passwordRegexp,
+      "Password must include 1 uppercase letter, 1 digit and 1 special character",
+    ),
+});
+
+export type LoginPayload = z.infer<typeof loginSchema>;
+
+export const resetSchema = z.object({
+  emailOrUsername: z
+    .string()
+    .min(1, "Email or username is required")
+    .refine(
+      (value) => {
+        const isEmail = emailRegexp.test(value);
+        const isUsername = usernameRegexp.test(value);
+        return isEmail || isUsername;
+      },
+      {
+        message: "Must be a valid email or username",
+      },
+    ),
+});
+
+export type ResetPayload = z.infer<typeof resetSchema>;
