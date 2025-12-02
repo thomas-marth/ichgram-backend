@@ -17,13 +17,9 @@ export const handleSaveError = (
   next();
 };
 
-export const setUpdateSettings = function (
-  this: Query<unknown, unknown>,
-  next: MongooseNext,
-) {
+export const setUpdateSettings = function (this: Query<unknown, Document>) {
   this.setOptions({
     new: true,
     runValidators: true,
   });
-  next();
 };

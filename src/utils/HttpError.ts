@@ -1,4 +1,4 @@
-const messageList = {
+const messageList: Record<number, string> = {
   400: "Bad request",
   401: "Unauthorized",
   403: "Forbidden",
