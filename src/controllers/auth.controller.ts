@@ -3,12 +3,12 @@ import validateBody from "./../utils/validateBody.js";
 import {
   registerUser,
   loginUser,
-  resetPassword,
+  // resetPassword,
 } from "./../services/auth.services.js";
 import {
   registerSchema,
   loginSchema,
-  resetSchema,
+  // resetSchema,
 } from "./../schemas/auth.schema.js";
 
 export const registerController = async (
