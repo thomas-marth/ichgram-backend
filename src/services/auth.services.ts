@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import {
   RegisterPayload,
   LoginPayload,
-  ResetPayload,
+  // ResetPayload,
 } from "../schemas/auth.schema.js";
 import User, { UserDocument } from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
@@ -15,7 +15,6 @@ if (!JWT_SECRET) {
 }
 
 type UserFindResult = UserDocument | null;
-
 export interface LoginResult {
   accessToken: string;
   refreshToken: string;
@@ -81,4 +80,4 @@ export const loginUser = async (
   };
 };
 
-export const resetPassword = async (payload: ResetPayload) => {};
+// export const resetPassword = async (payload: ResetPayload) => {};

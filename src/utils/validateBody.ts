@@ -1,13 +1,18 @@
-import { ZodSchema } from "zod/v3";
+import { type ZodType } from "zod";
 import HttpError from "./HttpError.js";
 
-const validateBody = (schema: ZodSchema, body: unknown) => {
-  const { error } = schema.safeParse(body);
-  if (error) {
-    const { message } = JSON.parse(error.message)[0];
+const validateBody = <Output = unknown>(
+  schema: ZodType<Output>,
+  body: unknown,
+): Output => {
+  const result = schema.safeParse(body);
+
+  if (!result.success) {
+    const { message } = JSON.parse(result.error.message)[0];
     throw HttpError(400, message);
   }
-  return true;
+
+  return result.data;
 };
 
 export default validateBody;
