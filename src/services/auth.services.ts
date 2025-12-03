@@ -29,13 +29,13 @@ export const registerUser = async (
 ): Promise<UserDocument> => {
   const user: UserFindResult = await User.findOne({ email: payload.email });
 
-  if (user) throw HttpError(409, "Email already exist");
+  if (user) throw HttpError(409, "This email is already taken.");
 
   const username: UserFindResult = await User.findOne({
     username: payload.username,
   });
 
-  if (username) throw HttpError(409, "Username already exist");
+  if (username) throw HttpError(409, "This username is already taken.");
 
   const hashPassword = await bcrypt.hash(payload.password, 10);
 
