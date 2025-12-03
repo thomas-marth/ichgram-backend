@@ -1,4 +1,4 @@
 export interface ResponseError extends Error {
-    status?: number;
+    status: number;
 }
 //# sourceMappingURL=interface.d.ts.map
