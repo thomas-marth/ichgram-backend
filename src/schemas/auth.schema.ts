@@ -14,6 +14,14 @@ export const registerSchema = z.object({
       usernameRegexp,
       "Username can include letters, numbers, . and _, and cannot start with . or _",
     ),
+  fullname: z
+    .string()
+    .min(3, "Fullname must have at least 3 characters")
+    .max(50, "Fullname must not exceed 50 characters")
+    .regex(
+      usernameRegexp,
+      "Fullname can include letters, numbers, . and _, and cannot start with . or _",
+    ),
   email: z
     .string()
     .min(1, "Email is required")

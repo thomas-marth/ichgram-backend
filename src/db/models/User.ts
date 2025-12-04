@@ -1,6 +1,10 @@
 import { Schema, model, Document } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "../hooks.js";
-import { emailRegexp, usernameRegexp } from "../../constants/auth.constants.js";
+import {
+  emailRegexp,
+  fullnameRegexp,
+  usernameRegexp,
+} from "../../constants/auth.constants.js";
 
 export interface UserDocument extends Document {
   fullname: string;
@@ -18,6 +22,7 @@ const userSchema = new Schema<UserDocument>(
     fullname: {
       type: String,
       required: true,
+      mutch: fullnameRegexp,
       minlength: 3,
       maxlength: 50,
     },
