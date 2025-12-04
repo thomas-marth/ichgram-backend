@@ -45,8 +45,9 @@ export const registerUser = async (
 export const loginUser = async (
   payload: LoginPayload,
 ): Promise<LoginResult> => {
+  const identifier = payload.email;
   const user: UserFindResult = await User.findOne({
-    $or: [{ username: payload.username }, { email: payload.email }],
+    $or: [{ username: identifier }, { email: identifier }],
   });
 
   if (!user) throw HttpError(401, "User not found");
