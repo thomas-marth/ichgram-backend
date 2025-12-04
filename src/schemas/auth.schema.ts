@@ -3,6 +3,7 @@ import {
   passwordRegexp,
   emailRegexp,
   usernameRegexp,
+  fullnameRegexp,
 } from "../constants/auth.constants.js";
 
 export const registerSchema = z.object({
@@ -19,7 +20,7 @@ export const registerSchema = z.object({
     .min(3, "Fullname must have at least 3 characters")
     .max(50, "Fullname must not exceed 50 characters")
     .regex(
-      usernameRegexp,
+      fullnameRegexp,
       "Fullname can include letters, numbers, . and _, and cannot start with . or _",
     ),
   email: z
