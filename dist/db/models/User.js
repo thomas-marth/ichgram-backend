@@ -1,10 +1,11 @@
 import { Schema, model } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "../hooks.js";
-import { emailRegexp, usernameRegexp } from "../../constants/auth.constants.js";
+import { emailRegexp, fullnameRegexp, usernameRegexp, } from "../../constants/auth.constants.js";
 const userSchema = new Schema({
     fullname: {
         type: String,
         required: true,
+        mutch: fullnameRegexp,
         minlength: 3,
         maxlength: 50,
     },

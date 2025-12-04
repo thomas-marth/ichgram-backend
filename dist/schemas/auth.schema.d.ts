@@ -1,6 +1,7 @@
 import * as z from "zod";
 export declare const registerSchema: z.ZodObject<{
     username: z.ZodString;
+    fullname: z.ZodString;
     email: z.ZodString;
     password: z.ZodString;
 }, z.core.$strip>;
