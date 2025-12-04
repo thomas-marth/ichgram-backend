@@ -41,11 +41,11 @@ const userSchema = new Schema<UserDocument>(
     },
     accessToken: {
       type: String,
-      required: true,
+      // required: true,
     },
     refreshToken: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   { versionKey: false, timestamps: true },

@@ -28,11 +28,11 @@ const userSchema = new Schema({
     },
     accessToken: {
         type: String,
-        required: true,
+        // required: true,
     },
     refreshToken: {
         type: String,
-        required: true,
+        // required: true,
     },
 }, { versionKey: false, timestamps: true });
 userSchema.post("save", handleSaveError);
