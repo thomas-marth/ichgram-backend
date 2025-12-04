@@ -19,8 +19,9 @@ export const registerUser = async (payload) => {
     return User.create({ ...payload, password: hashPassword });
 };
 export const loginUser = async (payload) => {
+    const identifier = payload.email;
     const user = await User.findOne({
-        $or: [{ username: payload.username }, { email: payload.email }],
+        $or: [{ username: identifier }, { email: identifier }],
     });
     if (!user)
         throw HttpError(401, "User not found");

@@ -7,7 +7,6 @@ export declare const registerSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type RegisterPayload = z.infer<typeof registerSchema>;
 export declare const loginSchema: z.ZodObject<{
-    username: z.ZodString;
     email: z.ZodString;
     password: z.ZodString;
 }, z.core.$strip>;

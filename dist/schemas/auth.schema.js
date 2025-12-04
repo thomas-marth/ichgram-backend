@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { passwordRegexp, emailRegexp, usernameRegexp, } from "../constants/auth.constants.js";
+import { passwordRegexp, emailRegexp, usernameRegexp, fullnameRegexp, } from "../constants/auth.constants.js";
 export const registerSchema = z.object({
     username: z
         .string()
@@ -10,7 +10,7 @@ export const registerSchema = z.object({
         .string()
         .min(3, "Fullname must have at least 3 characters")
         .max(50, "Fullname must not exceed 50 characters")
-        .regex(usernameRegexp, "Fullname can include letters, numbers, . and _, and cannot start with . or _"),
+        .regex(fullnameRegexp, "Fullname can include letters, numbers, . and _, and cannot start with . or _"),
     email: z
         .string()
         .min(1, "Email is required")
@@ -21,15 +21,12 @@ export const registerSchema = z.object({
         .regex(passwordRegexp, "Password must include 1 uppercase letter, 1 digit and 1 special character"),
 });
 export const loginSchema = z.object({
-    username: z
-        .string()
-        .min(3, "Username must have at least 3 characters")
-        .max(20, "Username must not exceed 20 characters")
-        .regex(usernameRegexp, "Username can include letters, numbers, . and _, and cannot start with . or _"),
     email: z
         .string()
-        .min(1, "Email is required")
-        .regex(emailRegexp, "Email must contain @ and not contain spacces"),
+        .min(1, "Email or username is required")
+        .refine((value) => emailRegexp.test(value) || usernameRegexp.test(value), {
+        message: "Must be a valid email or username",
+    }),
     password: z
         .string()
         .min(8, "Password must have at least 8 characters")
@@ -39,11 +36,7 @@ export const resetSchema = z.object({
     emailOrUsername: z
         .string()
         .min(1, "Email or username is required")
-        .refine((value) => {
-        const isEmail = emailRegexp.test(value);
-        const isUsername = usernameRegexp.test(value);
-        return isEmail || isUsername;
-    }, {
+        .refine((value) => emailRegexp.test(value) || usernameRegexp.test(value), {
         message: "Must be a valid email or username",
     }),
 });
