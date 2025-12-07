@@ -35,6 +35,19 @@ const userSchema = new Schema({
         type: String,
         // required: true,
     },
+    avatar: {
+        type: String,
+    },
+    about: {
+        type: String,
+        maxlength: 150,
+        trim: true,
+    },
+    website: {
+        type: String,
+        maxlength: 150,
+        trim: true,
+    },
 }, { versionKey: false, timestamps: true });
 userSchema.post("save", handleSaveError);
 userSchema.pre("findOneAndUpdate", setUpdateSettings);

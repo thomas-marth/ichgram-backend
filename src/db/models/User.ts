@@ -11,6 +11,9 @@ export interface UserDocument extends Document {
   username: string;
   email: string;
   password: string;
+  avatar?: string;
+  about?: string;
+  website?: string;
   accessToken: string;
   refreshToken: string;
   createdAt: Date;
@@ -51,6 +54,19 @@ const userSchema = new Schema<UserDocument>(
     refreshToken: {
       type: String,
       // required: true,
+    },
+    avatar: {
+      type: String,
+    },
+    about: {
+      type: String,
+      maxlength: 150,
+      trim: true,
+    },
+    website: {
+      type: String,
+      maxlength: 150,
+      trim: true,
     },
   },
   { versionKey: false, timestamps: true },

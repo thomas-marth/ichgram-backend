@@ -4,6 +4,9 @@ export interface UserDocument extends Document {
     username: string;
     email: string;
     password: string;
+    avatar?: string;
+    about?: string;
+    website?: string;
     accessToken: string;
     refreshToken: string;
     createdAt: Date;
