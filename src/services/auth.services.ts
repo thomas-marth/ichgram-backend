@@ -89,4 +89,11 @@ export const loginUser = async (
   };
 };
 
+export const logoutUser = async (userId: Types.ObjectId) => {
+  await User.findByIdAndUpdate(userId, {
+    accessToken: "",
+    refreshToken: "",
+  });
+};
+
 // export const resetPassword = async (payload: ResetPayload) => {};

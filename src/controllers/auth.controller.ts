@@ -4,6 +4,7 @@ import validateBody from "./../utils/validateBody.js";
 import {
   registerUser,
   loginUser,
+  logoutUser,
   // resetPassword,
 } from "./../services/auth.services.js";
 import {
@@ -44,4 +45,12 @@ export const getCurrentController = async (req: AuthRequest, res: Response) => {
       username: req.user.username,
     },
   });
+};
+
+export const logoutController: RequestHandler = async (req, res) => {
+  if (!req.user) throw HttpError(401, "User not authenticated");
+
+  await logoutUser(req.user._id);
+
+  res.status(200).json({ message: "Logout successfully" });
 };
