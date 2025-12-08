@@ -5,6 +5,7 @@ import { registerUser, loginUser,
 import { registerSchema, loginSchema,
 // resetSchema,
  } from "./../schemas/auth.schema.js";
+import { createTokens } from "./../services/auth.services.js";
 export const registerController = async (req, res) => {
     validateBody(registerSchema, req.body);
     await registerUser(req.body);
@@ -14,5 +15,16 @@ export const loginController = async (req, res) => {
     validateBody(loginSchema, req.body);
     const result = await loginUser(req.body);
     res.status(200).json(result);
+};
+export const getCurrentController = async (req, res) => {
+    const { accessToken, refreshToken } = createTokens(req.user._id);
+    res.json({
+        accessToken,
+        refreshToken,
+        user: {
+            email: req.user.email,
+            username: req.user.username,
+        },
+    });
 };
 //# sourceMappingURL=auth.controller.js.map

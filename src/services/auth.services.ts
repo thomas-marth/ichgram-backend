@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
 import {
   RegisterPayload,
   LoginPayload,
@@ -7,14 +7,10 @@ import {
 } from "../schemas/auth.schema.js";
 import User, { UserDocument } from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
+import { generateToken } from "./../utils/jwt.js";
+// import { email } from "zod";
 
-const { JWT_SECRET } = process.env;
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET not define in environment variables");
-}
-
-type UserFindResult = UserDocument | null;
+export type UserFindResult = UserDocument | null;
 export interface LoginResult {
   accessToken: string;
   refreshToken: string;
@@ -24,14 +20,32 @@ export interface LoginResult {
   };
 }
 
+export const createTokens = (id: Types.ObjectId) => {
+  const accessToken: string = generateToken({ id }, { expiresIn: "15m" });
+
+  const refreshToken: string = generateToken(
+    { id },
+    {
+      expiresIn: "7d",
+    },
+  );
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
+//@ts-expect-error
+export const findUser = (query) => User.findOne(query);
+
 export const registerUser = async (
   payload: RegisterPayload,
 ): Promise<UserDocument> => {
-  const user: UserFindResult = await User.findOne({ email: payload.email });
+  const user: UserFindResult = await findUser({ email: payload.email });
 
   if (user) throw HttpError(409, "This email is already taken.");
 
-  const username: UserFindResult = await User.findOne({
+  const username: UserFindResult = await findUser({
     username: payload.username,
   });
 
@@ -46,7 +60,7 @@ export const loginUser = async (
   payload: LoginPayload,
 ): Promise<LoginResult> => {
   const identifier = payload.email;
-  const user: UserFindResult = await User.findOne({
+  const user: UserFindResult = await findUser({
     $or: [{ username: identifier }, { email: identifier }],
   });
 
@@ -59,17 +73,9 @@ export const loginUser = async (
 
   if (!passwordCompare) throw HttpError(401, "Password invalid");
 
-  const tokenPayload = {
-    id: user._id,
-  };
+  const { accessToken, refreshToken } = createTokens(user._id);
 
-  const accessToken: string = jwt.sign(tokenPayload, JWT_SECRET, {
-    expiresIn: "15m",
-  });
-
-  const refreshToken: string = jwt.sign(tokenPayload, JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  await User.findByIdAndUpdate(user._id, { accessToken, refreshToken });
 
   return {
     accessToken,

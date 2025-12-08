@@ -1,16 +1,24 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
-const { JWT_SECRET } = process.env;
-if (!JWT_SECRET) {
-    throw new Error("JWT_SECRET not define in environment variables");
-}
+import { generateToken } from "./../utils/jwt.js";
+export const createTokens = (id) => {
+    const accessToken = generateToken({ id }, { expiresIn: "15m" });
+    const refreshToken = generateToken({ id }, {
+        expiresIn: "7d",
+    });
+    return {
+        accessToken,
+        refreshToken,
+    };
+};
+//@ts-expect-error
+export const findUser = (query) => User.findOne(query);
 export const registerUser = async (payload) => {
-    const user = await User.findOne({ email: payload.email });
+    const user = await findUser({ email: payload.email });
     if (user)
         throw HttpError(409, "This email is already taken.");
-    const username = await User.findOne({
+    const username = await findUser({
         username: payload.username,
     });
     if (username)
@@ -20,7 +28,7 @@ export const registerUser = async (payload) => {
 };
 export const loginUser = async (payload) => {
     const identifier = payload.email;
-    const user = await User.findOne({
+    const user = await findUser({
         $or: [{ username: identifier }, { email: identifier }],
     });
     if (!user)
@@ -28,15 +36,8 @@ export const loginUser = async (payload) => {
     const passwordCompare = await bcrypt.compare(payload.password, user.password);
     if (!passwordCompare)
         throw HttpError(401, "Password invalid");
-    const tokenPayload = {
-        id: user._id,
-    };
-    const accessToken = jwt.sign(tokenPayload, JWT_SECRET, {
-        expiresIn: "15m",
-    });
-    const refreshToken = jwt.sign(tokenPayload, JWT_SECRET, {
-        expiresIn: "7d",
-    });
+    const { accessToken, refreshToken } = createTokens(user._id);
+    await User.findByIdAndUpdate(user._id, { accessToken, refreshToken });
     return {
         accessToken,
         refreshToken,
