@@ -13,6 +13,7 @@ import {
 } from "./../schemas/auth.schema.js";
 import { createTokens } from "./../services/auth.services.js";
 import { AuthRequest } from "../types/interface.js";
+import HttpError from "../utils/HttpError.js";
 
 export const registerController = async (
   req: Request,
@@ -32,6 +33,7 @@ export const loginController: RequestHandler = async (req, res) => {
 };
 
 export const getCurrentController = async (req: AuthRequest, res: Response) => {
+  if (!req.user) throw HttpError(401, "User not authenticated");
   const { accessToken, refreshToken } = createTokens(req.user._id);
 
   res.json({
