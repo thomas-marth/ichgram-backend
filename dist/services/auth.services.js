@@ -12,7 +12,6 @@ export const createTokens = (id) => {
         refreshToken,
     };
 };
-//@ts-expect-error
 export const findUser = (query) => User.findOne(query);
 export const registerUser = async (payload) => {
     const user = await findUser({ email: payload.email });

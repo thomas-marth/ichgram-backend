@@ -6,6 +6,7 @@ import { registerSchema, loginSchema,
 // resetSchema,
  } from "./../schemas/auth.schema.js";
 import { createTokens } from "./../services/auth.services.js";
+import HttpError from "../utils/HttpError.js";
 export const registerController = async (req, res) => {
     validateBody(registerSchema, req.body);
     await registerUser(req.body);
@@ -17,6 +18,8 @@ export const loginController = async (req, res) => {
     res.status(200).json(result);
 };
 export const getCurrentController = async (req, res) => {
+    if (!req.user)
+        throw HttpError(401, "User not authenticated");
     const { accessToken, refreshToken } = createTokens(req.user._id);
     res.json({
         accessToken,

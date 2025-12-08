@@ -35,8 +35,10 @@ export const createTokens = (id: Types.ObjectId) => {
   };
 };
 
-//@ts-expect-error
-export const findUser = (query) => User.findOne(query);
+type UserQuery = Parameters<(typeof User)["findOne"]>[0];
+
+export const findUser = (query: UserQuery): Promise<UserFindResult> =>
+  User.findOne(query);
 
 export const registerUser = async (
   payload: RegisterPayload,
