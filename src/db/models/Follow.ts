@@ -14,7 +14,12 @@ const followSchema = new Schema<FollowDocument>(
   {
     user_id: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
+      required: true,
+    },
+    follower: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
       required: true,
     },
     following: {
