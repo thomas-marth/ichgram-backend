@@ -4,11 +4,14 @@ export interface UserDocument extends Document {
     username: string;
     email: string;
     password: string;
-    avatar?: string;
-    about?: string;
-    website?: string;
-    accessToken: string;
-    refreshToken: string;
+    avatar: string;
+    about: string;
+    website: string;
+    accessToken?: string;
+    refreshToken?: string;
+    followers: number;
+    following: number;
+    totalPosts: number;
     createdAt: Date;
     updatedAt: Date;
 }

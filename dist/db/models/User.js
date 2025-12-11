@@ -5,7 +5,7 @@ const userSchema = new Schema({
     fullname: {
         type: String,
         required: true,
-        mutch: fullnameRegexp,
+        match: fullnameRegexp,
         minlength: 3,
         maxlength: 50,
     },
@@ -15,13 +15,13 @@ const userSchema = new Schema({
         unique: true,
         match: usernameRegexp,
         minlength: 3,
-        maxlength: 15,
+        maxlength: 20,
     },
     email: {
         type: String,
-        match: emailRegexp,
         unique: true,
         required: true,
+        match: emailRegexp,
     },
     password: {
         type: String,
@@ -29,25 +29,30 @@ const userSchema = new Schema({
     },
     accessToken: {
         type: String,
-        // required: true,
     },
     refreshToken: {
         type: String,
-        // required: true,
     },
     avatar: {
         type: String,
+        default: "",
+        trim: true,
     },
     about: {
         type: String,
-        maxlength: 150,
+        default: "",
         trim: true,
+        maxlength: 150,
     },
     website: {
         type: String,
-        maxlength: 150,
+        default: "",
         trim: true,
+        maxlength: 150,
     },
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 },
+    totalPosts: { type: Number, default: 0 },
 }, { versionKey: false, timestamps: true });
 userSchema.post("save", handleSaveError);
 userSchema.pre("findOneAndUpdate", setUpdateSettings);

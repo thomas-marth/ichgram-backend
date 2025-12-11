@@ -10,13 +10,11 @@ export interface LoginResult {
         username: string;
     };
 }
-export declare const createTokens: (id: Types.ObjectId) => {
-    accessToken: string;
-    refreshToken: string;
-};
 type UserQuery = Parameters<(typeof User)["findOne"]>[0];
 export declare const findUser: (query: UserQuery) => Promise<UserFindResult>;
 export declare const registerUser: (payload: RegisterPayload) => Promise<UserDocument>;
 export declare const loginUser: (payload: LoginPayload) => Promise<LoginResult>;
+export declare const logoutUser: (userId: Types.ObjectId) => Promise<void>;
+export declare const refreshUser: (refreshTokenOld: string) => Promise<LoginResult>;
 export {};
 //# sourceMappingURL=auth.services.d.ts.map

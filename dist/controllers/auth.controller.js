@@ -1,11 +1,11 @@
 import validateBody from "./../utils/validateBody.js";
-import { registerUser, loginUser,
+import { registerUser, loginUser, logoutUser, refreshUser,
 // resetPassword,
  } from "./../services/auth.services.js";
 import { registerSchema, loginSchema,
 // resetSchema,
  } from "./../schemas/auth.schema.js";
-import { createTokens } from "./../services/auth.services.js";
+import createTokens from "../utils/createTokens.js";
 import HttpError from "../utils/HttpError.js";
 export const registerController = async (req, res) => {
     validateBody(registerSchema, req.body);
@@ -29,5 +29,15 @@ export const getCurrentController = async (req, res) => {
             username: req.user.username,
         },
     });
+};
+export const logoutController = async (req, res) => {
+    if (!req.user)
+        throw HttpError(401, "User not authenticated");
+    await logoutUser(req.user._id);
+    res.json({ message: "Logout successfully" });
+};
+export const refreshController = async (req, res) => {
+    const result = await refreshUser(req.body.refreshToken);
+    res.json(result);
 };
 //# sourceMappingURL=auth.controller.js.map

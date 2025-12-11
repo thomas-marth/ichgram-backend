@@ -1,0 +1,1 @@
+{"version":3,"file":"post.schema.d.ts","sourceRoot":"","sources":["../../src/schemas/post.schema.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,CAAC,MAAM,KAAK,CAAC;AAEzB,eAAO,MAAM,cAAc;;;;;iBAKzB,CAAC;AAEH,MAAM,MAAM,eAAe,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,cAAc,CAAC,CAAC;AAE7D,eAAO,MAAM,gBAAgB;;;iBAG3B,CAAC;AAEH,MAAM,MAAM,iBAAiB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,gBAAgB,CAAC,CAAC"}

@@ -1,17 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
-import { generateToken } from "./../utils/jwt.js";
-export const createTokens = (id) => {
-    const accessToken = generateToken({ id }, { expiresIn: "15m" });
-    const refreshToken = generateToken({ id }, {
-        expiresIn: "7d",
-    });
-    return {
-        accessToken,
-        refreshToken,
-    };
-};
+import { verifyToken } from "./../utils/jwt.js";
+import createTokens from "../utils/createTokens.js";
 export const findUser = (query) => User.findOne(query);
 export const registerUser = async (payload) => {
     const user = await findUser({ email: payload.email });
@@ -37,6 +28,34 @@ export const loginUser = async (payload) => {
         throw HttpError(401, "Password invalid");
     const { accessToken, refreshToken } = createTokens(user._id);
     await User.findByIdAndUpdate(user._id, { accessToken, refreshToken });
+    return {
+        accessToken,
+        refreshToken,
+        user: {
+            email: user.email,
+            username: user.username,
+        },
+    };
+};
+export const logoutUser = async (userId) => {
+    await User.findByIdAndUpdate(userId, {
+        accessToken: null,
+        refreshToken: null,
+    });
+};
+export const refreshUser = async (refreshTokenOld) => {
+    const { error } = verifyToken(refreshTokenOld);
+    if (error)
+        throw HttpError(401, error.message);
+    // console.log(refreshTokenOld);
+    const user = await findUser({
+        refreshToken: refreshTokenOld,
+    });
+    if (!user)
+        throw HttpError(401, "User not found");
+    const { accessToken, refreshToken } = createTokens(user._id);
+    await User.findByIdAndUpdate(user._id, { accessToken, refreshToken });
+    console.log(refreshToken);
     return {
         accessToken,
         refreshToken,
