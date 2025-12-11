@@ -3,6 +3,7 @@ import { Schema, Document, model, Types } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "../hooks.js";
 
 export interface FollowDocument extends Document {
+  user_id: Types.ObjectId;
   follower: Types.ObjectId;
   following: Types.ObjectId;
   createdAt: Date;
@@ -11,9 +12,9 @@ export interface FollowDocument extends Document {
 
 const followSchema = new Schema<FollowDocument>(
   {
-    follower: {
+    user_id: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     following: {

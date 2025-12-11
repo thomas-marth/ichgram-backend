@@ -36,21 +36,20 @@ export const followUser = async (
   await ensureUserExists(followerId.toString());
   await ensureUserExists(followingId);
 
-  const followingObjectId = new Types.ObjectId(followingId);
-
   const existingFollow = await Follow.findOne({
     follower: followerId,
-    following: followingObjectId,
+    following: followingId,
   });
   if (existingFollow) throw HttpError(409, "Already following this user");
 
   const follow = await Follow.create({
+    user_id: followingId,
     follower: followerId,
-    following: followingObjectId,
+    following: followingId,
   });
 
   await User.findByIdAndUpdate(followerId, { $inc: { following: 1 } });
-  await User.findByIdAndUpdate(followingObjectId, { $inc: { followers: 1 } });
+  await User.findByIdAndUpdate(followingId, { $inc: { followers: 1 } });
 
   return follow;
 };
@@ -59,17 +58,15 @@ export const unfollowUser = async (
   followerId: Types.ObjectId,
   followingId: string,
 ) => {
-  const followingObjectId = new Types.ObjectId(followingId);
-
   const follow = await Follow.findOneAndDelete({
     follower: followerId,
-    following: followingObjectId,
+    following: followingId,
   });
 
   if (!follow) throw HttpError(404, "Follow relationship not found");
 
   await User.findByIdAndUpdate(followerId, { $inc: { following: -1 } });
-  await User.findByIdAndUpdate(followingObjectId, { $inc: { followers: -1 } });
+  await User.findByIdAndUpdate(followingId, { $inc: { followers: -1 } });
 
   return follow;
 };
