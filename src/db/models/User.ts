@@ -11,11 +11,14 @@ export interface UserDocument extends Document {
   username: string;
   email: string;
   password: string;
-  avatar?: string;
-  about?: string;
-  website?: string;
-  accessToken: string;
-  refreshToken: string;
+  avatar: string;
+  about: string;
+  website: string;
+  accessToken?: string;
+  refreshToken?: string;
+  followers: number;
+  following: number;
+  totalPosts: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +28,7 @@ const userSchema = new Schema<UserDocument>(
     fullname: {
       type: String,
       required: true,
-      mutch: fullnameRegexp,
+      match: fullnameRegexp,
       minlength: 3,
       maxlength: 50,
     },
@@ -35,13 +38,13 @@ const userSchema = new Schema<UserDocument>(
       unique: true,
       match: usernameRegexp,
       minlength: 3,
-      maxlength: 15,
+      maxlength: 20,
     },
     email: {
       type: String,
-      match: emailRegexp,
       unique: true,
       required: true,
+      match: emailRegexp,
     },
     password: {
       type: String,
@@ -49,25 +52,30 @@ const userSchema = new Schema<UserDocument>(
     },
     accessToken: {
       type: String,
-      // required: true,
     },
     refreshToken: {
       type: String,
-      // required: true,
     },
     avatar: {
       type: String,
+      default: "",
+      trim: true,
     },
     about: {
       type: String,
-      maxlength: 150,
+      default: "",
       trim: true,
+      maxlength: 150,
     },
     website: {
       type: String,
-      maxlength: 150,
+      default: "",
       trim: true,
+      maxlength: 150,
     },
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 },
+    totalPosts: { type: Number, default: 0 },
   },
   { versionKey: false, timestamps: true },
 );

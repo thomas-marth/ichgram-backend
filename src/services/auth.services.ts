@@ -7,8 +7,8 @@ import {
 } from "../schemas/auth.schema.js";
 import User, { UserDocument } from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
-import { generateToken } from "./../utils/jwt.js";
-// import { email } from "zod";
+import { verifyToken } from "./../utils/jwt.js";
+import createTokens from "../utils/createTokens.js";
 
 export type UserFindResult = UserDocument | null;
 export interface LoginResult {
@@ -19,21 +19,6 @@ export interface LoginResult {
     username: string;
   };
 }
-
-export const createTokens = (id: Types.ObjectId) => {
-  const accessToken: string = generateToken({ id }, { expiresIn: "15m" });
-
-  const refreshToken: string = generateToken(
-    { id },
-    {
-      expiresIn: "7d",
-    },
-  );
-  return {
-    accessToken,
-    refreshToken,
-  };
-};
 
 type UserQuery = Parameters<(typeof User)["findOne"]>[0];
 
@@ -91,9 +76,34 @@ export const loginUser = async (
 
 export const logoutUser = async (userId: Types.ObjectId) => {
   await User.findByIdAndUpdate(userId, {
-    accessToken: "",
-    refreshToken: "",
+    accessToken: null,
+    refreshToken: null,
   });
+};
+
+export const refreshUser = async (
+  refreshTokenOld: string,
+): Promise<LoginResult> => {
+  const { error } = verifyToken(refreshTokenOld);
+  if (error) throw HttpError(401, error.message);
+  // console.log(refreshTokenOld);
+  const user: UserFindResult = await findUser({
+    refreshToken: refreshTokenOld,
+  });
+
+  if (!user) throw HttpError(401, "User not found");
+
+  const { accessToken, refreshToken } = createTokens(user._id);
+  await User.findByIdAndUpdate(user._id, { accessToken, refreshToken });
+  console.log(refreshToken);
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      email: user.email,
+      username: user.username,
+    },
+  };
 };
 
 // export const resetPassword = async (payload: ResetPayload) => {};

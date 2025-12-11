@@ -5,6 +5,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
+  refreshUser,
   // resetPassword,
 } from "./../services/auth.services.js";
 import {
@@ -12,7 +13,7 @@ import {
   loginSchema,
   // resetSchema,
 } from "./../schemas/auth.schema.js";
-import { createTokens } from "./../services/auth.services.js";
+import createTokens from "../utils/createTokens.js";
 import { AuthRequest } from "../types/interface.js";
 import HttpError from "../utils/HttpError.js";
 
@@ -47,10 +48,16 @@ export const getCurrentController = async (req: AuthRequest, res: Response) => {
   });
 };
 
-export const logoutController: RequestHandler = async (req, res) => {
+export const logoutController = async (req: AuthRequest, res: Response) => {
   if (!req.user) throw HttpError(401, "User not authenticated");
 
   await logoutUser(req.user._id);
 
-  res.status(200).json({ message: "Logout successfully" });
+  res.json({ message: "Logout successfully" });
+};
+
+export const refreshController: RequestHandler = async (req, res) => {
+  const result = await refreshUser(req.body.refreshToken);
+
+  res.json(result);
 };
