@@ -6,6 +6,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routers/auth.router.js";
 import postRouter from "./routers/post.router.js";
+import likeRouter from "./routers/like.router.js";
 
 const startServer = (): void => {
   const app: Express = express();
@@ -16,6 +17,7 @@ const startServer = (): void => {
 
   app.use("/api/auth", authRouter);
   app.use("/api/posts", postRouter);
+  app.use("/api/likes", likeRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
