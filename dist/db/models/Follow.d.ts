@@ -1,5 +1,6 @@
 import { Document, Types } from "mongoose";
 export interface FollowDocument extends Document {
+    user_id: Types.ObjectId;
     follower: Types.ObjectId;
     following: Types.ObjectId;
     createdAt: Date;

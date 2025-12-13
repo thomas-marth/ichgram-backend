@@ -1,0 +1,73 @@
+import { Types } from "mongoose";
+
+import Comment from "../db/models/Comment.js";
+import Post from "../db/models/Post.js";
+import HttpError from "../utils/HttpError.js";
+
+const PUBLIC_USER_FIELDS = "username avatar";
+
+const ensurePostExists = async (postId: string) => {
+  const post = await Post.findById(postId);
+  if (!post) throw HttpError(404, "Post not found");
+  return post;
+};
+
+export const getPostComments = async (postId: string) => {
+  await ensurePostExists(postId);
+  return Comment.find({ post: postId })
+    .populate("user", PUBLIC_USER_FIELDS)
+    .sort({ createdAt: -1 });
+};
+
+export const createComment = async (
+  postId: string,
+  userId: Types.ObjectId,
+  text: string,
+) => {
+  const post = await ensurePostExists(postId);
+
+  const comment = await Comment.create({
+    post: post._id,
+    user: userId,
+    text,
+  });
+
+  await Post.findByIdAndUpdate(post._id, { $inc: { totalComments: 1 } });
+
+  return comment.populate("user", PUBLIC_USER_FIELDS);
+};
+
+export const deleteComment = async (
+  commentId: string,
+  requesterId: Types.ObjectId,
+) => {
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw HttpError(404, "Comment not found");
+
+  if (comment.user.toString() !== requesterId.toString())
+    throw HttpError(403, "You are not allowed to delete this comment");
+
+  await comment.deleteOne();
+  await Post.findByIdAndUpdate(comment.post, { $inc: { totalComments: -1 } });
+};
+
+export const toggleCommentLike = async (
+  commentId: string,
+  userId: Types.ObjectId,
+) => {
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw HttpError(404, "Comment not found");
+
+  const userIdStr = userId.toString();
+  const hasLiked = comment.likes.some((id) => id.toString() === userIdStr);
+
+  if (hasLiked) {
+    comment.likes = comment.likes.filter((id) => id.toString() !== userIdStr);
+  } else {
+    comment.likes.push(userId);
+  }
+
+  await comment.save();
+
+  return { comment, isLiked: !hasLiked };
+};

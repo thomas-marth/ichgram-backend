@@ -1,6 +1,11 @@
 import { Schema, model } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "../hooks.js";
 const followSchema = new Schema({
+    user_id: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
+    },
     follower: {
         type: Schema.Types.ObjectId,
         ref: "user",
