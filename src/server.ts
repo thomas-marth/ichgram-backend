@@ -9,6 +9,7 @@ import postRouter from "./routers/post.router.js";
 import likeRouter from "./routers/like.router.js";
 import followRouter from "./routers/follow.router.js";
 import commentRouter from "./routers/comment.router.js";
+import userRouter from "./routers/user.router.js";
 
 const startServer = (): void => {
   const app: Express = express();
@@ -22,6 +23,7 @@ const startServer = (): void => {
   app.use("/api/likes", likeRouter);
   app.use("/api/follows", followRouter);
   app.use("/api/comments", commentRouter);
+  app.use("/api/users", userRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
