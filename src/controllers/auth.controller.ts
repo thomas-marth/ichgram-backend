@@ -16,6 +16,7 @@ import {
 import createTokens from "../utils/createTokens.js";
 import { AuthRequest } from "../types/interface.js";
 import HttpError from "../utils/HttpError.js";
+import { formatUserResponse } from "../services/auth.services.js";
 
 export const registerController = async (
   req: Request,
@@ -41,10 +42,7 @@ export const getCurrentController = async (req: AuthRequest, res: Response) => {
   res.json({
     accessToken,
     refreshToken,
-    user: {
-      email: req.user.email,
-      username: req.user.username,
-    },
+    user: formatUserResponse(req.user),
   });
 };
 

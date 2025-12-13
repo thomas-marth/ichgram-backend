@@ -5,11 +5,22 @@ export type UserFindResult = UserDocument | null;
 export interface LoginResult {
     accessToken: string;
     refreshToken: string;
-    user: {
-        email: string;
-        username: string;
-    };
+    user: ReturnType<typeof formatUserResponse>;
 }
+export declare const formatUserResponse: (user: UserDocument) => {
+    id: string;
+    username: string;
+    fullname: string;
+    email: string;
+    avatar: string;
+    about: string;
+    website: string;
+    followers: number;
+    following: number;
+    totalPosts: number;
+    createdAt: Date;
+    updatedAt: Date;
+};
 type UserQuery = Parameters<(typeof User)["findOne"]>[0];
 export declare const findUser: (query: UserQuery) => Promise<UserFindResult>;
 export declare const registerUser: (payload: RegisterPayload) => Promise<UserDocument>;

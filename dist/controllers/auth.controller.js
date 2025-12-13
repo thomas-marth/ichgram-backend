@@ -7,6 +7,7 @@ import { registerSchema, loginSchema,
  } from "./../schemas/auth.schema.js";
 import createTokens from "../utils/createTokens.js";
 import HttpError from "../utils/HttpError.js";
+import { formatUserResponse } from "../services/auth.services.js";
 export const registerController = async (req, res) => {
     validateBody(registerSchema, req.body);
     await registerUser(req.body);
@@ -24,10 +25,7 @@ export const getCurrentController = async (req, res) => {
     res.json({
         accessToken,
         refreshToken,
-        user: {
-            email: req.user.email,
-            username: req.user.username,
-        },
+        user: formatUserResponse(req.user),
     });
 };
 export const logoutController = async (req, res) => {

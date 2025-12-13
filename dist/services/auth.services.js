@@ -3,6 +3,20 @@ import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
 import { verifyToken } from "./../utils/jwt.js";
 import createTokens from "../utils/createTokens.js";
+export const formatUserResponse = (user) => ({
+    id: user._id.toString(),
+    username: user.username,
+    fullname: user.fullname,
+    email: user.email,
+    avatar: user.avatar,
+    about: user.about,
+    website: user.website,
+    followers: user.followers,
+    following: user.following,
+    totalPosts: user.totalPosts,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+});
 export const findUser = (query) => User.findOne(query);
 export const registerUser = async (payload) => {
     const user = await findUser({ email: payload.email });
@@ -31,10 +45,7 @@ export const loginUser = async (payload) => {
     return {
         accessToken,
         refreshToken,
-        user: {
-            email: user.email,
-            username: user.username,
-        },
+        user: formatUserResponse(user),
     };
 };
 export const logoutUser = async (userId) => {
@@ -59,10 +70,7 @@ export const refreshUser = async (refreshTokenOld) => {
     return {
         accessToken,
         refreshToken,
-        user: {
-            email: user.email,
-            username: user.username,
-        },
+        user: formatUserResponse(user),
     };
 };
 // export const resetPassword = async (payload: ResetPayload) => {};

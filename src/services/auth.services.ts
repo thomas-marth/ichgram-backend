@@ -14,11 +14,23 @@ export type UserFindResult = UserDocument | null;
 export interface LoginResult {
   accessToken: string;
   refreshToken: string;
-  user: {
-    email: string;
-    username: string;
-  };
+  user: ReturnType<typeof formatUserResponse>;
 }
+
+export const formatUserResponse = (user: UserDocument) => ({
+  id: user._id.toString(),
+  username: user.username,
+  fullname: user.fullname,
+  email: user.email,
+  avatar: user.avatar,
+  about: user.about,
+  website: user.website,
+  followers: user.followers,
+  following: user.following,
+  totalPosts: user.totalPosts,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
 
 type UserQuery = Parameters<(typeof User)["findOne"]>[0];
 
@@ -67,10 +79,7 @@ export const loginUser = async (
   return {
     accessToken,
     refreshToken,
-    user: {
-      email: user.email,
-      username: user.username,
-    },
+    user: formatUserResponse(user),
   };
 };
 
@@ -99,10 +108,7 @@ export const refreshUser = async (
   return {
     accessToken,
     refreshToken,
-    user: {
-      email: user.email,
-      username: user.username,
-    },
+    user: formatUserResponse(user),
   };
 };
 
