@@ -21,7 +21,7 @@ const postSchema = new Schema<PostDocument>(
       type: String,
       trim: true,
       default: "",
-      maxlength: 350,
+      maxlength: 2200,
     },
     image: {
       type: String,
