@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { generateToken } from "./jwt.js";
 
 const createTokens = (id: Types.ObjectId) => {
-  const accessToken: string = generateToken({ id }, { expiresIn: "15M" });
+  const accessToken: string = generateToken({ id }, { expiresIn: "3d" });
 
   const refreshToken: string = generateToken(
     { id },
