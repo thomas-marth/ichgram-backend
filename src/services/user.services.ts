@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 
+import Follow from "../db/models/Follow.js";
 import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
 import { uploadBufferToCloudinary } from "../utils/cloudinary.js";
@@ -9,13 +10,21 @@ const PUBLIC_USER_FIELDS = "-password -accessToken -refreshToken";
 const uploadAvatarToCloudinary = async (fileBuffer: Buffer): Promise<string> =>
   uploadBufferToCloudinary(fileBuffer);
 
-export const getUserProfile = async (userId: string) => {
+export const getUserProfile = async (
+  userId: string,
+  viewerId?: Types.ObjectId,
+) => {
   if (!Types.ObjectId.isValid(userId)) throw HttpError(400, "Invalid user ID");
 
-  const user = await User.findById(userId).select(PUBLIC_USER_FIELDS);
+  const user = await User.findById(userId).select(PUBLIC_USER_FIELDS).lean();
   if (!user) throw HttpError(404, "User not found");
 
-  return user;
+  const isViewerOwner = viewerId?.toString() === userId;
+  const isFollowed = viewerId
+    ? Boolean(await Follow.exists({ follower: viewerId, following: userId }))
+    : false;
+
+  return { ...user, isFollowed: !isViewerOwner && isFollowed };
 };
 
 interface UpdateUserPayload {
