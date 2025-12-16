@@ -14,7 +14,7 @@ export const handleSaveError = (
   if (error?.name === "MongoServerError") {
     error.status = 409;
   }
-  next();
+  next(error);
 };
 
 export const setUpdateSettings = function (this: Query<unknown, Document>) {

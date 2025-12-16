@@ -34,7 +34,7 @@ export const removeLikeFromPost = async (
   await ensurePostExists(postId);
 
   const like = await Like.findOneAndDelete({ post: postId, user: userId });
-  if (!like) throw HttpError(404, "Like not found");
+  if (!like) return null;
 
   await Post.findByIdAndUpdate(postId, { $inc: { totalLikes: -1 } });
 
