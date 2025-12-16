@@ -3,6 +3,10 @@ import { Types } from "mongoose";
 import Comment from "../db/models/Comment.js";
 import Post from "../db/models/Post.js";
 import HttpError from "../utils/HttpError.js";
+import {
+  createNotification,
+  removeNotification,
+} from "./notification.services.js";
 
 const PUBLIC_USER_FIELDS = "username avatar";
 
@@ -33,6 +37,14 @@ export const createComment = async (
   });
 
   await Post.findByIdAndUpdate(post._id, { $inc: { totalComments: 1 } });
+
+  await createNotification({
+    recipient: post.author,
+    actor: userId,
+    type: "comment_post",
+    post: post._id,
+    comment: comment._id,
+  });
 
   return comment.populate("user", PUBLIC_USER_FIELDS);
 };
@@ -68,6 +80,21 @@ export const toggleCommentLike = async (
   }
 
   await comment.save();
+
+  const recipientId = comment.user as Types.ObjectId;
+  const notificationPayload = {
+    recipient: recipientId,
+    actor: userId,
+    type: "like_comment" as const,
+    post: comment.post as Types.ObjectId,
+    comment: comment._id,
+  };
+
+  if (hasLiked) {
+    await removeNotification(notificationPayload);
+  } else {
+    await createNotification(notificationPayload);
+  }
 
   return { comment, isLiked: !hasLiked };
 };

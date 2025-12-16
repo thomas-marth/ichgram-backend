@@ -3,6 +3,10 @@ import { Types } from "mongoose";
 import Follow from "../db/models/Follow.js";
 import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
+import {
+  createNotification,
+  removeNotification,
+} from "./notification.services.js";
 
 const ensureUserExists = async (userId: string) => {
   const user = await User.findById(userId);
@@ -51,6 +55,12 @@ export const followUser = async (
   await User.findByIdAndUpdate(followerId, { $inc: { following: 1 } });
   await User.findByIdAndUpdate(followingId, { $inc: { followers: 1 } });
 
+  await createNotification({
+    recipient: follow.following,
+    actor: followerId,
+    type: "follow",
+  });
+
   return follow;
 };
 
@@ -67,6 +77,12 @@ export const unfollowUser = async (
 
   await User.findByIdAndUpdate(followerId, { $inc: { following: -1 } });
   await User.findByIdAndUpdate(followingId, { $inc: { followers: -1 } });
+
+  await removeNotification({
+    recipient: follow.following,
+    actor: followerId,
+    type: "follow",
+  });
 
   return follow;
 };
