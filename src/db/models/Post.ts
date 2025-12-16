@@ -6,6 +6,7 @@ export interface PostDocument extends Document {
   description: string;
   image: string;
   totalLikes: number;
+  totalComments: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,6 +30,10 @@ const postSchema = new Schema<PostDocument>(
       trim: true,
     },
     totalLikes: {
+      type: Number,
+      default: 0,
+    },
+    totalComments: {
       type: Number,
       default: 0,
     },
