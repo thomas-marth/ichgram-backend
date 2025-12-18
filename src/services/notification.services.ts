@@ -4,6 +4,7 @@ import Notification, {
   NotificationDocument,
   NotificationType,
 } from "../db/models/Notification.js";
+import HttpError from "../utils/HttpError.js";
 
 const NOTIFICATION_POPULATE_CONFIG = [
   { path: "actor", select: "username avatar" },
@@ -58,3 +59,15 @@ export const getNotificationsForUser = async (recipient: Types.ObjectId) =>
   Notification.find({ recipient })
     .sort({ createdAt: -1 })
     .populate(NOTIFICATION_POPULATE_CONFIG);
+
+export const deleteNotificationById = async (
+  notificationId: string,
+  recipient: Types.ObjectId,
+) => {
+  const deleted = await Notification.findOneAndDelete({
+    _id: notificationId,
+    recipient,
+  });
+
+  if (!deleted) throw HttpError(404, "Notification not found");
+};
