@@ -1,6 +1,7 @@
 import Follow from "../db/models/Follow.js";
 import User from "../db/models/User.js";
 import HttpError from "../utils/HttpError.js";
+import { createNotification, removeNotification, } from "./notification.services.js";
 const ensureUserExists = async (userId) => {
     const user = await User.findById(userId);
     if (!user)
@@ -33,6 +34,11 @@ export const followUser = async (followerId, followingId) => {
     });
     await User.findByIdAndUpdate(followerId, { $inc: { following: 1 } });
     await User.findByIdAndUpdate(followingId, { $inc: { followers: 1 } });
+    await createNotification({
+        recipient: follow.following,
+        actor: followerId,
+        type: "follow",
+    });
     return follow;
 };
 export const unfollowUser = async (followerId, followingId) => {
@@ -44,6 +50,11 @@ export const unfollowUser = async (followerId, followingId) => {
         throw HttpError(404, "Follow relationship not found");
     await User.findByIdAndUpdate(followerId, { $inc: { following: -1 } });
     await User.findByIdAndUpdate(followingId, { $inc: { followers: -1 } });
+    await removeNotification({
+        recipient: follow.following,
+        actor: followerId,
+        type: "follow",
+    });
     return follow;
 };
 //# sourceMappingURL=follow.services.js.map

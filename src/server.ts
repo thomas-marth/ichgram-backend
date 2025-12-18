@@ -1,5 +1,9 @@
-import express, { Express } from "express";
-import cors from "cors";
+import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { createServer } from "http";
+import { setupExpressMiddlewares } from "./middlewares/setupExpress.js";
 
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -11,13 +15,15 @@ import followRouter from "./routers/follow.router.js";
 import commentRouter from "./routers/comment.router.js";
 import userRouter from "./routers/user.router.js";
 import notificationRouter from "./routers/notification.router.js";
+import messageRouter from "./routers/message.router.js";
 
-const startServer = (): void => {
-  const app: Express = express();
-  const port: number = Number(process.env.PORT) || 3000;
+import setupSocketServer from "./socket.js";
 
-  app.use(cors());
-  app.use(express.json());
+const startServer = () => {
+  const app = express();
+  const port = Number(process.env.PORT) || 3000;
+
+  setupExpressMiddlewares(app);
 
   app.use("/api/auth", authRouter);
   app.use("/api/posts", postRouter);
@@ -26,11 +32,15 @@ const startServer = (): void => {
   app.use("/api/comments", commentRouter);
   app.use("/api/users", userRouter);
   app.use("/api/notifications", notificationRouter);
+  app.use("/api/messages", messageRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
 
-  app.listen(port, () => console.log(`Server running on port ${port}`));
+  const server = createServer(app);
+  setupSocketServer(server);
+
+  server.listen(port, () => console.log(`Server running on port ${port}`));
 };
 
 export default startServer;

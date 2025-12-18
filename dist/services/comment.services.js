@@ -1,6 +1,7 @@
 import Comment from "../db/models/Comment.js";
 import Post from "../db/models/Post.js";
 import HttpError from "../utils/HttpError.js";
+import { createNotification, removeNotification, } from "./notification.services.js";
 const PUBLIC_USER_FIELDS = "username avatar";
 const ensurePostExists = async (postId) => {
     const post = await Post.findById(postId);
@@ -22,6 +23,13 @@ export const createComment = async (postId, userId, text) => {
         text,
     });
     await Post.findByIdAndUpdate(post._id, { $inc: { totalComments: 1 } });
+    await createNotification({
+        recipient: post.author,
+        actor: userId,
+        type: "comment_post",
+        post: post._id,
+        comment: comment._id,
+    });
     return comment.populate("user", PUBLIC_USER_FIELDS);
 };
 export const deleteComment = async (commentId, requesterId) => {
@@ -46,6 +54,20 @@ export const toggleCommentLike = async (commentId, userId) => {
         comment.likes.push(userId);
     }
     await comment.save();
+    const recipientId = comment.user;
+    const notificationPayload = {
+        recipient: recipientId,
+        actor: userId,
+        type: "like_comment",
+        post: comment.post,
+        comment: comment._id,
+    };
+    if (hasLiked) {
+        await removeNotification(notificationPayload);
+    }
+    else {
+        await createNotification(notificationPayload);
+    }
     return { comment, isLiked: !hasLiked };
 };
 //# sourceMappingURL=comment.services.js.map

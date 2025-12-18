@@ -4,6 +4,7 @@ export interface PostDocument extends Document {
     description: string;
     image: string;
     totalLikes: number;
+    totalComments: number;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -33,11 +33,26 @@ export declare const getPostsByUserId: (userId: string) => import("mongoose").Qu
 }> & {
     __v: number;
 }, {}, import("../db/models/Post.js").PostDocument, "find", {}>;
-export declare const getFollowingFeedPosts: (userId: Types.ObjectId) => Promise<(import("mongoose").Document<unknown, {}, import("../db/models/Post.js").PostDocument, {}, import("mongoose").DefaultSchemaOptions> & import("../db/models/Post.js").PostDocument & Required<{
+export declare const getFollowingFeedPosts: (userId: Types.ObjectId) => Promise<{
+    totalComments: any;
+    author: Types.ObjectId;
+    description: string;
+    image: string;
+    totalLikes: number;
+    createdAt: Date;
+    updatedAt: Date;
     _id: Types.ObjectId;
-}> & {
+    $locals: Record<string, unknown>;
+    $op: "save" | "validate" | "remove" | null;
+    $where: Record<string, unknown>;
+    baseModelName?: string;
+    collection: import("mongoose").Collection;
+    db: import("mongoose").Connection;
+    errors?: import("mongoose").Error.ValidationError;
+    isNew: boolean;
+    schema: import("mongoose").Schema;
     __v: number;
-})[]>;
+}[]>;
 export declare const getExplorePosts: (userId?: Types.ObjectId) => Promise<(import("mongoose").Document<unknown, {}, import("../db/models/Post.js").PostDocument, {}, import("mongoose").DefaultSchemaOptions> & import("../db/models/Post.js").PostDocument & Required<{
     _id: Types.ObjectId;
 }> & {

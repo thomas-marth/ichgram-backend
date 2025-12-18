@@ -1,7 +1,30 @@
 import { Types } from "mongoose";
-export declare const getUserProfile: (userId: string) => Promise<import("mongoose").Document<unknown, {}, import("../db/models/User.js").UserDocument, {}, import("mongoose").DefaultSchemaOptions> & import("../db/models/User.js").UserDocument & Required<{
+export declare const getUserProfile: (userId: string, viewerId?: Types.ObjectId) => Promise<{
+    isFollowed: boolean;
+    fullname: string;
+    username: string;
+    email: string;
+    password: string;
+    avatar: string;
+    about: string;
+    website: string;
+    accessToken?: string;
+    refreshToken?: string;
+    followers: number;
+    following: number;
+    totalPosts: number;
+    createdAt: Date;
+    updatedAt: Date;
     _id: Types.ObjectId;
-}> & {
+    $locals: Record<string, unknown>;
+    $op: "save" | "validate" | "remove" | null;
+    $where: Record<string, unknown>;
+    baseModelName?: string;
+    collection: import("mongoose").Collection;
+    db: import("mongoose").Connection;
+    errors?: import("mongoose").Error.ValidationError;
+    isNew: boolean;
+    schema: import("mongoose").Schema;
     __v: number;
 }>;
 interface UpdateUserPayload {

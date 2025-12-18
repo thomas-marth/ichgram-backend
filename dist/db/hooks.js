@@ -5,7 +5,7 @@ export const handleSaveError = (error, doc, next) => {
     if (error?.name === "MongoServerError") {
         error.status = 409;
     }
-    next();
+    next(error);
 };
 export const setUpdateSettings = function () {
     this.setOptions({

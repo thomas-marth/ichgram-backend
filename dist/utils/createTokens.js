@@ -1,6 +1,6 @@
 import { generateToken } from "./jwt.js";
 const createTokens = (id) => {
-    const accessToken = generateToken({ id }, { expiresIn: "15M" });
+    const accessToken = generateToken({ id }, { expiresIn: "3d" });
     const refreshToken = generateToken({ id }, {
         expiresIn: "7d",
     });

@@ -11,7 +11,10 @@ export const getUserProfileController = async (req, res) => {
     const { userId } = req.params;
     if (!userId)
         throw HttpError(400, "User ID is required");
-    const user = await getUserProfile(userId);
+    const viewerId = req.get("Authorization")
+        ? getUserIdFromToken(req)
+        : undefined;
+    const user = await getUserProfile(userId, viewerId);
     res.status(200).json(user);
 };
 export const updateUserProfileController = async (req, res) => {

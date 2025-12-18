@@ -10,7 +10,7 @@ const postSchema = new Schema({
         type: String,
         trim: true,
         default: "",
-        maxlength: 350,
+        maxlength: 2200,
     },
     image: {
         type: String,
@@ -18,6 +18,10 @@ const postSchema = new Schema({
         trim: true,
     },
     totalLikes: {
+        type: Number,
+        default: 0,
+    },
+    totalComments: {
         type: Number,
         default: 0,
     },

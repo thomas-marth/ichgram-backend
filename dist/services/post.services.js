@@ -1,6 +1,7 @@
 import Follow from "../db/models/Follow.js";
 import Post from "../db/models/Post.js";
 import User from "../db/models/User.js";
+import Comment from "../db/models/Comment.js";
 import HttpError from "../utils/HttpError.js";
 import { uploadBufferToCloudinary } from "../utils/cloudinary.js";
 const PUBLIC_AUTHOR_FIELDS = "username avatar";
@@ -57,9 +58,22 @@ export const getFollowingFeedPosts = async (userId) => {
     const followingIds = followingUsers.map(({ following }) => following);
     if (!followingIds.length)
         return [];
-    return Post.find({ author: { $in: followingIds } })
+    const posts = await Post.find({ author: { $in: followingIds } })
         .populate("author", PUBLIC_AUTHOR_FIELDS)
         .sort({ createdAt: -1 });
+    const postIds = posts.map((post) => post._id);
+    const commentsCounts = await Comment.aggregate([
+        { $match: { post: { $in: postIds } } },
+        { $group: { _id: "$post", total: { $sum: 1 } } },
+    ]);
+    const commentsCountMap = new Map(commentsCounts.map(({ _id, total }) => [String(_id), total]));
+    return posts.map((post) => {
+        const commentCount = commentsCountMap.get(String(post._id));
+        return {
+            ...post.toObject(),
+            totalComments: commentCount ?? post.totalComments ?? 0,
+        };
+    });
 };
 export const getExplorePosts = async (userId) => {
     if (!userId)
