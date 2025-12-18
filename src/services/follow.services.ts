@@ -18,7 +18,7 @@ export const getUserFollowers = async (userId: string) => {
   await ensureUserExists(userId);
   return Follow.find({ following: userId }).populate(
     "follower",
-    "username avatar",
+    "username avatar fullname",
   );
 };
 
@@ -26,7 +26,7 @@ export const getUserFollowing = async (userId: string) => {
   await ensureUserExists(userId);
   return Follow.find({ follower: userId }).populate(
     "following",
-    "username avatar",
+    "username avatar fullname",
   );
 };
 

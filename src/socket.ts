@@ -23,13 +23,25 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "*";
 
 const setupSocketServer = (httpServer: HttpServer) => {
   const io = new Server(httpServer, {
-    cors: { origin: CLIENT_ORIGIN, credentials: true },
+    cors: {
+      origin: CLIENT_ORIGIN,
+      credentials: true,
+    },
+    transports: ["websocket", "polling"],
+    pingInterval: 20000,
+    pingTimeout: 60000,
   });
 
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
-    if (!token) return next(new Error("No token provided"));
+    // console.log("💡 SOCKET TOKEN RECEIVED =", token);
+    if (!token) {
+      // console.log("❌ No token provided");
+      return next(new Error("No token provided"));
+    }
     const { data, error } = verifyToken(token);
+    // console.log("🛠 VERIFY RESULT =", { data, error });
+
     if (error || !data) return next(new Error("Invalid token"));
     socket.data.userId = data.id.toString();
     next();
