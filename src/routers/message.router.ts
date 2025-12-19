@@ -4,6 +4,7 @@ import {
   getMessagesWithUserController,
   sendMessageController,
   messagesMiddlewares,
+  getLastMessagesController,
 } from "../controllers/message.controllers.js";
 
 const messageRouter: Router = Router();
@@ -27,5 +28,10 @@ messageRouter.get(
 );
 
 messageRouter.post("/", messagesMiddlewares, sendMessageController);
+messageRouter.get(
+  "/last-for-all",
+  messagesMiddlewares,
+  getLastMessagesController,
+);
 
 export default messageRouter;

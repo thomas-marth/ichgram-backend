@@ -69,3 +69,30 @@ export const formatMessageResponse = (message: MessageDocument) => ({
   text: message.text,
   createdAt: message.createdAt,
 });
+
+export const getLastMessagesForUser = async (userId: string) => {
+  const follows = await Follow.find({ follower: userId });
+
+  const ids = follows.map((f) => f.following.toString());
+  if (!ids.length) return [];
+
+  const convoIds = ids.map((otherId) => buildConversationId(userId, otherId));
+
+  const raw = await Message.aggregate([
+    { $match: { conversationId: { $in: convoIds } } },
+    { $sort: { createdAt: -1 } },
+    {
+      $group: {
+        _id: "$conversationId",
+        last: { $first: "$$ROOT" },
+      },
+    },
+  ]);
+
+  return raw.map((r) => ({
+    userId:
+      r.last.from === userId ? r.last.to.toString() : r.last.from.toString(),
+    text: r.last.text,
+    createdAt: r.last.createdAt,
+  }));
+};

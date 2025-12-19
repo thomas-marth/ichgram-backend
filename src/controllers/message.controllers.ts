@@ -5,6 +5,7 @@ import {
   createMessage,
   formatMessageResponse,
   getMessagesWithUser,
+  getLastMessagesForUser,
 } from "../services/message.services.js";
 import HttpError from "../utils/HttpError.js";
 import { AuthRequest } from "../types/interface.js";
@@ -41,6 +42,15 @@ export const sendMessageController: RequestHandler = async (req, res) => {
   );
 
   res.status(201).json(formatMessageResponse(message));
+};
+
+export const getLastMessagesController: RequestHandler = async (req, res) => {
+  const auth = req as AuthRequest;
+
+  if (!auth.user) throw HttpError(401, "User not authenticated");
+
+  const data = await getLastMessagesForUser(auth.user._id.toString());
+  res.json(data);
 };
 
 export const messagesMiddlewares = [authenticate];
