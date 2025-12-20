@@ -58,7 +58,7 @@ export const registerUser = async (
 export const loginUser = async (
   payload: LoginPayload,
 ): Promise<LoginResult> => {
-  const identifier = payload.email.trim().toLowerCase();
+  const identifier = payload.email;
   const user: UserFindResult = await findUser({
     $or: [{ username: identifier }, { email: identifier }],
   });
