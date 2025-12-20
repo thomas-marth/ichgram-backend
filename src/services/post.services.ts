@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 import Follow from "../db/models/Follow.js";
-import Post from "../db/models/Post.js";
+import Post, { PostDocument } from "../db/models/Post.js";
 import User from "../db/models/User.js";
 import Comment from "../db/models/Comment.js";
 import HttpError from "../utils/HttpError.js";
@@ -63,6 +63,18 @@ export const getPostById = async (postId: string) => {
   return post;
 };
 
+const mapPostToResponse = (post: Awaited<ReturnType<typeof getPostById>>) => {
+  const { _id, description, ...rest } = post.toObject();
+
+  return {
+    ...rest,
+    id: String(_id),
+    description,
+    descriptionBody: description,
+    captionBody: description,
+  };
+};
+
 export const updatePost = async (
   postId: string,
   userId: Types.ObjectId,
@@ -74,14 +86,22 @@ export const updatePost = async (
   if (post.author.toString() !== userId.toString())
     throw HttpError(403, "You are not allowed to edit this post");
 
-  if (description !== undefined) post.description = description;
+  const updates: Partial<PostDocument> = {};
+
+  if (description !== undefined) updates.description = description;
 
   if (imageBuffer) {
-    post.image = await uploadImageToCloudinary(imageBuffer);
+    updates.image = await uploadImageToCloudinary(imageBuffer);
   }
 
-  await post.save();
-  return post;
+  const updatedPost = await Post.findByIdAndUpdate(postId, updates).populate(
+    "author",
+    PUBLIC_AUTHOR_FIELDS,
+  );
+
+  if (!updatedPost) throw HttpError(500, "Failed to update post");
+
+  return mapPostToResponse(updatedPost);
 };
 
 export const getPostsByUserId = (userId: string) => getPostsByAuthor(userId);
@@ -125,20 +145,30 @@ export const getExplorePosts = async (userId?: Types.ObjectId) => {
       .populate("author", PUBLIC_AUTHOR_FIELDS)
       .sort({ totalLikes: -1 });
 
+  const userIdString = userId.toString();
+
   const followingUsers = await Follow.find({ follower: userId }).select(
     "following",
   );
-  const followingIds = followingUsers.map(({ following }) => following);
+  const followingIds = followingUsers
+    .map(({ following }) => following)
+    .filter(Boolean);
+  const followingWithoutSelf = followingIds.filter(
+    (id) => id.toString() !== userIdString,
+  );
+  const excludedAuthorIds = [userId, ...followingWithoutSelf];
 
   const nonFollowedPosts = await Post.find({
-    author: { $nin: followingIds },
+    author: { $nin: excludedAuthorIds },
   })
     .populate("author", PUBLIC_AUTHOR_FIELDS)
     .sort({ totalLikes: -1 });
 
-  if (!followingIds.length) return nonFollowedPosts;
+  if (!followingWithoutSelf.length) return nonFollowedPosts;
 
-  const followedPosts = await Post.find({ author: { $in: followingIds } })
+  const followedPosts = await Post.find({
+    author: { $in: followingWithoutSelf },
+  })
     .populate("author", PUBLIC_AUTHOR_FIELDS)
     .sort({ totalLikes: -1 });
 
