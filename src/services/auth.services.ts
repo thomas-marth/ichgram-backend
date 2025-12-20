@@ -10,6 +10,12 @@ import HttpError from "../utils/HttpError.js";
 import { verifyToken } from "./../utils/jwt.js";
 import createTokens from "../utils/createTokens.js";
 
+const escapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const buildCaseInsensitiveExactMatch = (value: string) =>
+  new RegExp(`^${escapeRegex(value)}$`, "i");
+
 export type UserFindResult = UserDocument | null;
 export interface LoginResult {
   accessToken: string;
@@ -58,9 +64,14 @@ export const registerUser = async (
 export const loginUser = async (
   payload: LoginPayload,
 ): Promise<LoginResult> => {
-  const identifier = payload.email;
+  const identifier = payload.email.trim();
+  const caseInsensitiveIdentifier = buildCaseInsensitiveExactMatch(identifier);
+
   const user: UserFindResult = await findUser({
-    $or: [{ username: identifier }, { email: identifier }],
+    $or: [
+      { username: caseInsensitiveIdentifier },
+      { email: caseInsensitiveIdentifier },
+    ],
   });
 
   if (!user) throw HttpError(401, "User not found");
