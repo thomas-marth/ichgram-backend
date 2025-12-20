@@ -89,10 +89,19 @@ export const getLastMessagesForUser = async (userId: string) => {
     },
   ]);
 
-  return raw.map((r) => ({
-    userId:
-      r.last.from === userId ? r.last.to.toString() : r.last.from.toString(),
-    text: r.last.text,
-    createdAt: r.last.createdAt,
-  }));
+  return raw.map((r) => {
+    const fromId = r.last.from.toString();
+    const toId = r.last.to.toString();
+    const isSentByUser = fromId === userId;
+    const otherUserId = isSentByUser ? toId : fromId;
+
+    return {
+      id: r.last._id.toString(),
+      userId: otherUserId,
+      from: fromId,
+      to: toId,
+      text: r.last.text,
+      createdAt: r.last.createdAt,
+    };
+  });
 };
