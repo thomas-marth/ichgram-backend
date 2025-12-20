@@ -1,4 +1,3 @@
-// src/socket.ts
 import { Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
 import { verifyToken } from "./utils/jwt.js";

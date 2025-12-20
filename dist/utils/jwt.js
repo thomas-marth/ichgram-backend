@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 const { JWT_SECRET } = process.env;
 if (!JWT_SECRET) {
-    throw new Error("JWT_SECRET not define in environment variables");
+    throw new Error("JWT_SECRET not defined in environment variables");
 }
 export const generateToken = (payload, settings) => jwt.sign(payload, JWT_SECRET, settings);
 export const verifyToken = (token) => {

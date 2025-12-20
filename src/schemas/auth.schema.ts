@@ -26,7 +26,7 @@ export const registerSchema = z.object({
   email: z
     .string()
     .min(1, "Email is required")
-    .regex(emailRegexp, "Email must contain @ and not contain spacces"),
+    .regex(emailRegexp, "Email must contain @ and not contain spaces"),
 
   password: z
     .string()

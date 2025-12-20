@@ -31,7 +31,7 @@ export const registerUser = async (payload) => {
     return User.create({ ...payload, password: hashPassword });
 };
 export const loginUser = async (payload) => {
-    const identifier = payload.email;
+    const identifier = payload.email.trim().toLowerCase();
     const user = await findUser({
         $or: [{ username: identifier }, { email: identifier }],
     });

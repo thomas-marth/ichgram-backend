@@ -13,7 +13,7 @@ interface VerifyTokenResult {
 const { JWT_SECRET } = process.env;
 
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET not define in environment variables");
+  throw new Error("JWT_SECRET not defined in environment variables");
 }
 
 export const generateToken = (

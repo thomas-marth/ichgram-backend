@@ -10,4 +10,9 @@ export declare const formatMessageResponse: (message: MessageDocument) => {
     text: string;
     createdAt: Date;
 };
+export declare const getLastMessagesForUser: (userId: string) => Promise<{
+    userId: any;
+    text: any;
+    createdAt: any;
+}[]>;
 //# sourceMappingURL=message.services.d.ts.map

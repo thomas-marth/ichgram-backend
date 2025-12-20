@@ -10,11 +10,11 @@ const ensureUserExists = async (userId) => {
 };
 export const getUserFollowers = async (userId) => {
     await ensureUserExists(userId);
-    return Follow.find({ following: userId }).populate("follower", "username avatar");
+    return Follow.find({ following: userId }).populate("follower", "username avatar fullname");
 };
 export const getUserFollowing = async (userId) => {
     await ensureUserExists(userId);
-    return Follow.find({ follower: userId }).populate("following", "username avatar");
+    return Follow.find({ follower: userId }).populate("following", "username avatar fullname");
 };
 export const followUser = async (followerId, followingId) => {
     if (followerId.toString() === followingId)
